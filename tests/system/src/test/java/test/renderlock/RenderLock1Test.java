@@ -31,7 +31,7 @@ import org.junit.Test;
 public class RenderLock1Test extends RenderLockCommon {
     @Test
     public void windowCloseTest() throws Exception {
-        assumeTrue(Boolean.getBoolean("unstable.test"));
+        //assumeTrue(Boolean.getBoolean("unstable.test"));
         doWindowCloseTest();
     }
 }
