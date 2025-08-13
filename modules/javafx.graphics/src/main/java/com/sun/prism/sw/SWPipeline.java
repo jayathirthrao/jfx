@@ -78,7 +78,7 @@ public final class SWPipeline extends GraphicsPipeline {
                 // When Metal becomes default hardware pipeline, we need
                 // enable this flag
                 devDetails.put("useMTLInGlass",
-                                false);
+                                true);
             }
         }
         return factory;
