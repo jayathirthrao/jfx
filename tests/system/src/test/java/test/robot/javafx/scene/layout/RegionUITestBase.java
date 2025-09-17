@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.time.Duration;
+import java.time.Instant;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.WritableImage;
@@ -83,7 +85,13 @@ public abstract class RegionUITestBase extends VisualTestBase {
 
     protected void setStyle(final String style) {
         runAndWait(() -> region.setStyle(style));
+        Instant start = Instant.now();
         waitFirstFrame();
+        Instant end = Instant.now();
+        Duration duration = Duration.between(start, end);
+        System.out.println("Execution time: " + duration.toMillis() + " milliseconds");
+        System.out.println("Execution time: " + duration.getSeconds() + " seconds");
+        System.out.println("Execution time: " + duration.toMinutes() + " minutes");
     }
 
     static final double TOLERANCE = 0.07;
