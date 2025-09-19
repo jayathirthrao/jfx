@@ -57,7 +57,7 @@ public class MenuDoubleShortcutTest {
     static CountDownLatch startupLatch = new CountDownLatch(1);
 
     static volatile TestApp testApp;
-    static private final int delayMilliseconds = 100;
+    static private final int delayMilliseconds = 500;
 
     private enum TestResult {
         // We provide an explanation of what happened. Since we only see this
