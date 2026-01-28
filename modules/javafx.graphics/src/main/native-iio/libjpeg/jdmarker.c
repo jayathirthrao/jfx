@@ -1102,6 +1102,9 @@ read_markers (j_decompress_ptr cinfo)
       return JPEG_SUSPENDED;
       }
     }
+    fprintf(stdout, "Unread marker : %x \n", cinfo->unread_marker);
+    fprintf(stdout, "read_markers Next byte : %p\n", (cinfo->src->next_input_byte));
+    fflush(stdout);
     /* At this point cinfo->unread_marker contains the marker code and the
      * input point is just past the marker proper, but before any parameters.
      * A suspension will cause us to return with this state still true.

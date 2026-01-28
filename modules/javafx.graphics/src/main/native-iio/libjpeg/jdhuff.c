@@ -544,7 +544,12 @@ jpeg_fill_bit_buffer (bitread_working_state * state,
        * appears per data segment.
        */
       if (! ((huff_entropy_ptr) cinfo->entropy)->insufficient_data) {
+        fprintf(stdout, "jdhuff before warning Next byte : %p\n", (state->next_input_byte));
+        fflush(stdout);
     WARNMS(cinfo, JWRN_HIT_MARKER);
+        next_input_byte = cinfo->src->next_input_byte;
+        fprintf(stdout, "jdhuff after warning Next byte : %p\n", (state->next_input_byte));
+        fflush(stdout);
     ((huff_entropy_ptr) cinfo->entropy)->insufficient_data = TRUE;
       }
       /* Fill the buffer with zero bits */
@@ -559,6 +564,8 @@ jpeg_fill_bit_buffer (bitread_working_state * state,
   state->get_buffer = get_buffer;
   state->bits_left = bits_left;
 
+  fprintf(stdout, "jdhuff exit Next byte : %p\n", (state->next_input_byte));
+  fflush(stdout);
   return TRUE;
 }
 

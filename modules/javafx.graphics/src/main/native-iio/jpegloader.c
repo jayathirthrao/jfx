@@ -260,9 +260,19 @@ static int pinStreamBuffer(JNIEnv *env,
         if (sb->buf == NULL) {
             return NOT_OK;
         }
+        fprintf(stdout, "pinStreamBuffer succesfully pinned sb->buf\n");
+        fflush(stdout);
         if (sb->bufferOffset != NO_DATA) {
             *next_byte = sb->buf + sb->bufferOffset;
         }
+        fprintf(stdout, "pinStreamBuffer Stream buffer starting address : %p\n", (sb->hstreamBuffer));
+        fprintf(stdout, "pinStreamBuffer Pinned buffer starting address : %p\n", (sb->buf));
+        fprintf(stdout, "pinStreamBuffer Buffer offset : %d\n", (sb->bufferOffset));
+        fprintf(stdout, "pinStreamBuffer Next byte address : %p\n", (*next_byte));
+        fflush(stdout);
+    } else {
+        fprintf(stdout, "pinStreamBuffer hstreamBuffer is NULL\n");
+        fflush(stdout);
     }
     return OK;
 }
@@ -280,11 +290,22 @@ static void unpinStreamBuffer(JNIEnv *env,
         } else {
             sb->bufferOffset = next_byte - sb->buf;
         }
+        fprintf(stdout, "unpinStreamBuffer Stream buffer starting address : %p\n", (sb->hstreamBuffer));
+        fprintf(stdout, "unpinStreamBuffer Pinned Buffer starting address : %p\n", (sb->buf));
+        fprintf(stdout, "unpinStreamBuffer Buffer offset : %d\n", (sb->bufferOffset));
+        if (next_byte != NULL) {
+            fprintf(stdout, "unpinStreamBuffer Next byte : %p\n", (next_byte));
+        }
+        fflush(stdout);
         (*env)->ReleasePrimitiveArrayCritical(env,
                 sb->hstreamBuffer,
                 sb->buf,
                 0);
         sb->buf = NULL;
+        fprintf(stdout, "unpinStreamBuffer succesfully un-pinned sb->buf\n");
+    } else {
+        fprintf(stdout, "unpinStreamBuffer sb->buf is NULL\n");
+        fflush(stdout);
     }
 }
 
@@ -586,7 +607,11 @@ sun_jpeg_output_message(j_common_ptr cinfo) {
 
     if (cinfo->is_decompressor) {
         dinfo = (j_decompress_ptr)cinfo;
+        fprintf(stdout, "sun_jpeg_output_message calling RELEASE_ARRAYS\n");
+        fflush(stdout);
         RELEASE_ARRAYS(env, data, dinfo->src->next_input_byte);
+        fprintf(stdout, "sun_jpeg_output_message returned from RELEASE_ARRAYS\n");
+        fflush(stdout);
     }
     // Create a new java string from the message
     string = (*env)->NewStringUTF(env, buffer);
@@ -598,9 +623,13 @@ sun_jpeg_output_message(j_common_ptr cinfo) {
                 JPEGImageLoader_emitWarningID,
                 string);
         checkAndClearException(env);
+        fprintf(stdout, "sun_jpeg_output_message calling GET_ARRAYS\n");
+        fflush(stdout);
         if (!GET_ARRAYS(env, data, &(dinfo->src->next_input_byte))) {
             cinfo->err->error_exit(cinfo);
         }
+        fprintf(stdout, "sun_jpeg_output_message returned from GET_ARRAYS\n");
+        fflush(stdout);
     }
 }
 
@@ -1685,6 +1714,14 @@ JNIEXPORT jboolean JNICALL Java_com_sun_javafx_iio_jpeg_JPEGImageLoader_decompre
         }
 
         num_scanlines = jpeg_read_scanlines(cinfo, &scanline_ptr, 1);
+        if (cinfo->output_scanline == 65) {
+            /*fprintf(stdout, "Fetching info at scanline 65\n");
+            fflush(stdout);
+            struct jpeg_source_mgr * datasrc = (cinfo)->src;
+            const JOCTET * next_input_byte = datasrc->next_input_byte;
+            size_t bytes_in_buffer = datasrc->bytes_in_buffer;
+            int i = ((unsigned int) GETJOCTET(*next_input_byte++)) << 8;*/
+        }
         if (num_scanlines == 1) {
             jbyte *body = (*env)->GetPrimitiveArrayCritical(env, barray, NULL);
             if (body == NULL) {
